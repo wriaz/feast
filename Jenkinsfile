@@ -4,11 +4,13 @@ pipeline{
         stage('Build') {
             steps {
                 echo 'Building..'
+                sh 'mvn clean package'
             }
         }
-        stage('Test') {
+        stage('Archive Artifacts') {
             steps {
-                echo 'Testing..'
+                echo 'Archiving..'
+                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true, followSymlinks: false
             }
         }
         stage('Deploy') {
