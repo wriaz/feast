@@ -1,10 +1,19 @@
 pipeline{
     agent any
     stages {
-        stage('Build') {
+        stage('Sonar Quality Check') {
+            agent {
+                docker {
+                    image 'openjdk:11'
+                }
+            }
             steps {
-                echo 'Building..'
-                sh './mvnw clean package'
+                withSonarQubeEnv(credentialsId: 'sonar_token') {
+                    echo 'Building..'
+                    sh './mvnw clean package'
+                    sh './mvnw sonar:sonar'
+                }
+
             }
         }
         stage('Archive Artifacts') {
