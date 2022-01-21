@@ -2,6 +2,8 @@ pipeline{
     agent any
     environment {
         VERSION = "${env.BUILD_ID}"
+        DOCKER_URL = "${env.DOCKER_REPO_URL}"
+        DOCKER_IMAGE_NAME = "feast"
     }
     stages {
         stage('Sonar Quality Check') {
@@ -36,10 +38,19 @@ pipeline{
 
         }
 
-        stage("Create Docker Image"){
+        stage("Docker Build & Docker Push"){
             steps {
-                echo "Creating Docker Image"
-                sh 'docker build -t  feast:${VERSION} .'
+                withCredentials([string(credentialsId: 'docker_repo_pass', variable: 'DOCKER_REPO_PASS')]) {
+   
+                    echo "Creating Docker Image"
+                    sh '''
+                    docker build -t  ${DOCKER_URL}/${DOCKER_IMAGE_NAME}:${VERSION} .
+                    docker login -u admin -p ${DOCKER_REPO_PASS} ${DOCKER_URL}
+                    docker push ${DOCKER_URL}/${DOCKER_IMAGE_NAME}:${VERSION}
+                    docker rmi ${DOCKER_URL}/${DOCKER_IMAGE_NAME}:${VERSION}
+                    '''
+                }
+
             }
         }
 
