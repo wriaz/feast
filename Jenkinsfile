@@ -1,5 +1,8 @@
 pipeline{
     agent any
+    environment {
+        VERSION = "${env.BUILD_ID}"
+    }
     stages {
         stage('Sonar Quality Check') {
             agent {
@@ -36,7 +39,7 @@ pipeline{
         stage("Create Docker Image"){
             steps {
                 echo "Creating Docker Image"
-                sh 'docker build -t  feast:v${BUILD_ID} .'
+                sh 'docker build -t  feast:${VERSION} .'
             }
         }
 
