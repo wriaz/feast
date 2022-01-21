@@ -1,5 +1,9 @@
 pipeline{
-    agent any
+    agent {
+        docker {
+            image: 'openjdk:17-alpine'
+        }
+    }
     stages {
         stage('Sonar Quality Check') {
             steps {
@@ -25,6 +29,7 @@ pipeline{
                 echo 'Archiving..'
                 archiveArtifacts artifacts: 'target/*.jar', fingerprint: true, followSymlinks: false
             }
+
         }
 
         stage("Create Docker Image"){
