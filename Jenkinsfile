@@ -1,5 +1,8 @@
 pipeline{
     agent any
+    options {
+        buildDiscarder(logRotator(numToKeepStr: "6"))
+    }
     environment {
         VERSION = "${env.BUILD_ID}"
         DOCKER_URL = "${env.DOCKER_REPO_URL}"
